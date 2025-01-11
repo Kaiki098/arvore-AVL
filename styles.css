@@ -103,6 +103,7 @@ h2 {
 .box__header {
     display: flex;
     align-items: center;
+    gap: 4px;
     flex-direction: column;
     margin-bottom: 20px;
 }

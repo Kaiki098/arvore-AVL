@@ -30,7 +30,7 @@ export class ArvoreAVL {
       } else if (valor > node.valor) {
         node.dir = await insertHelper(node.dir, node);
       } else {
-        this.status = `O VALOR ${valor} JÁ EXISTE.`;
+        atualizaStatus(`O VALOR ${valor} JÁ EXISTE.`);
         return node;
       }
 
@@ -95,29 +95,31 @@ export class ArvoreAVL {
 
     if (bf > 1) {
       await atualizaArvore();
+      let rotacaoMsg = `rotação à direita no nó ${node.valor}.`;
+      if (this._getFatorBalanceamento(node.esq) < 0) {
+        rotacaoMsg = `rotação à esquerda no nó ${node.esq.valor} e rotação à direita no nó ${node.valor}.`;
+        node.esq = this._esqRotaciona(node.esq);
+      }
+      atualizaStatus(rotacaoMsg.charAt(0).toUpperCase() + rotacaoMsg.slice(1));
       await new Promise((resolve) => {
-        alert(`Será necessário realizar rotação no nó ${node.valor}.`);
+        alert(`Será necessário realizar ${rotacaoMsg}`);
         resolve();
       });
-      atualizaStatus(`Rotação Direita no nó ${node.valor}`);
-      if (this._getFatorBalanceamento(node.esq) < 0) {
-        node.esq = this._esqRotaciona(node.esq);
-        atualizaStatus(`Rotação Esquerda-Direita no nó ${node.valor}`);
-      }
       return this._dirRotaciona(node);
     }
 
     if (bf < -1) {
       await atualizaArvore();
+      let rotacaoMsg = `rotação à esquerda no nó ${node.valor}.`;
+      if (this._getFatorBalanceamento(node.dir) > 0) {
+        rotacaoMsg = `rotação à direita no nó ${node.dir.valor} e rotação à esquerda no nó ${node.valor}.`;
+        node.dir = this._dirRotaciona(node.dir);
+      }
+      atualizaStatus(rotacaoMsg.charAt(0).toUpperCase() + rotacaoMsg.slice(1));
       await new Promise((resolve) => {
-        alert(`Será necessário realizar rotação no nó ${node.valor}.`);
+        alert(`Será necessário realizar ${rotacaoMsg}`);
         resolve();
       });
-      atualizaStatus(`Rotação Esquerda no nó ${node.valor}`);
-      if (this._getFatorBalanceamento(node.dir) > 0) {
-        node.dir = this._dirRotaciona(node.dir);
-        atualizaStatus(`Rotação Direita-Esquerda no nó ${node.valor}`);
-      }
       return this._esqRotaciona(node);
     }
 

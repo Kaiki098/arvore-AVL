@@ -17,7 +17,6 @@ form.addEventListener("submit", async function (event) {
       await arvore.insert(valor, atualizaArvore, atualizaStatus);
     } else if (acao === "remover") {
       await arvore.delete(valor, atualizaArvore, atualizaStatus);
-      statusDiv.innerText = `REMOVIDO: ${valor}. ${arvore.status}`;
     } else if (acao === "buscar") {
       const caminho = arvore.search(valor);
       const encontrado = caminho[caminho.length - 1] === valor;
