@@ -7,8 +7,9 @@ form.addEventListener("submit", async function (event) {
   event.preventDefault();
   const submitButton = event.submitter;
   const valor = parseInt(document.getElementById("valor").value);
-  const acao = event.submitter.value;
+  const acao = submitButton.value;
 
+  // Disable button
   submitButton.disabled = true;
 
   try {
@@ -16,13 +17,14 @@ form.addEventListener("submit", async function (event) {
       await arvore.insert(valor, atualizaArvore, atualizaStatus);
     } else if (acao === "remover") {
       await arvore.delete(valor, atualizaArvore, atualizaStatus);
+      statusDiv.innerText = `REMOVIDO: ${valor}. ${arvore.status}`;
     } else if (acao === "buscar") {
       const caminho = arvore.search(valor);
       const encontrado = caminho[caminho.length - 1] === valor;
       highlightSearchPath(caminho);
-      statusDiv.innerText = encontrado
-        ? `ENCONTRADO: ${valor}`
-        : `NÃO ENCONTRADO: ${valor}`;
+      atualizaStatus(
+        encontrado ? `ENCONTRADO: ${valor}` : `NÃO ENCONTRADO: ${valor}`
+      );
     }
   } finally {
     // Re-enable button after operation completes
@@ -52,19 +54,33 @@ function highlightSearchPath(caminho) {
     .style("fill", "#fff");
 }
 
-function atualizaArvore() {
-  // Remove previous tree
-  d3.select("#tree-container").select("svg").remove();
+async function atualizaArvore() {
+  return await new Promise((resolve) => {
+    try {
+      // Remove previous tree
+      d3.select("#tree-container").select("svg").remove();
 
-  // Create new tree
-  createTree();
+      // Create new tree
+      createTree();
 
-  treeHeight.innerText = `Altura: ${arvore.raiz.altura}`;
+      // Update height
+      treeHeight.innerText = `Altura: ${arvore.raiz.altura}`;
 
-  // Centraliza o scroll
-  treeContainer.scrollLeft =
-    (treeContainer.scrollWidth - treeContainer.clientWidth) / 2;
-  treeContainer.scrollTop = 0;
+      // Center scroll
+      treeContainer.scrollLeft =
+        (treeContainer.scrollWidth - treeContainer.clientWidth) / 2;
+      treeContainer.scrollTop = 0;
+
+      // Wait for D3 transitions to complete
+      d3.select("#tree-container")
+        .transition()
+        .duration(750)
+        .on("end", resolve);
+    } catch (error) {
+      console.error("Error updating tree:", error);
+      resolve(); // Resolve even on error to prevent blocking
+    }
+  });
 }
 
 function contaDescendentesDireita(node) {

@@ -38,7 +38,7 @@ export class ArvoreAVL {
       this.atualizaFatores(this.raiz);
       this.atualizaDados();
 
-      return this._balance(node, atualizaArvore, atualizaStatus);
+      return await this._balance(node, atualizaArvore, atualizaStatus);
     };
 
     this.raiz = await insertHelper(this.raiz);
@@ -94,8 +94,7 @@ export class ArvoreAVL {
     const bf = this._getFatorBalanceamento(node);
 
     if (bf > 1) {
-      atualizaArvore();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await atualizaArvore();
       await new Promise((resolve) => {
         alert(`Será necessário realizar rotação no nó ${node.valor}.`);
         resolve();
@@ -109,8 +108,7 @@ export class ArvoreAVL {
     }
 
     if (bf < -1) {
-      atualizaArvore();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await atualizaArvore();
       await new Promise((resolve) => {
         alert(`Será necessário realizar rotação no nó ${node.valor}.`);
         resolve();
