@@ -19,6 +19,7 @@ form.addEventListener("submit", async function (event) {
       await arvore.delete(valor, atualizaArvore, atualizaStatus);
     } else if (acao === "buscar") {
       const caminho = arvore.search(valor);
+      console.log(caminho);
       const encontrado = caminho[caminho.length - 1] === valor;
       highlightSearchPath(caminho);
       atualizaStatus(
@@ -36,7 +37,7 @@ function atualizaStatus(novoStatus) {
 }
 
 function highlightSearchPath(caminho) {
-  const duracao = 500;
+  const duracao = 1000;
 
   // Animate nodes sequentially
   d3.selectAll("circle")
@@ -45,7 +46,7 @@ function highlightSearchPath(caminho) {
     .style("fill", function (d) {
       const index = caminho.indexOf(d.data.value);
       if (index === -1) return "#fff";
-      return d3.interpolateGreens(index / caminho.length);
+      return d3.interpolateGreens((index+1) / caminho.length);
     })
     .transition()
     .delay(1000)
@@ -73,7 +74,7 @@ async function atualizaArvore() {
       // Wait for D3 transitions to complete
       d3.select("#tree-container")
         .transition()
-        .duration(750)
+        .duration(500)
         .on("end", resolve);
     } catch (error) {
       console.error("Error updating tree:", error);

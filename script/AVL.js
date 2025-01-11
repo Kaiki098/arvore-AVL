@@ -81,8 +81,8 @@ export class ArvoreAVL {
     atualizaArvore();
   }
 
-  search(valor, node = this.raiz, caminho = [this.raiz.valor]) {
-    const novoCaminho = [...caminho, node.valor];
+  search(valor, node = this.raiz, caminho = []) {
+    const novoCaminho = !node ? caminho : [...caminho, node.valor];
     if (!node) return novoCaminho;
     if (valor === node.valor) return novoCaminho;
     return valor < node.valor
