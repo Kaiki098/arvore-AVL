@@ -9,16 +9,16 @@ form.addEventListener("submit", async function (event) {
   const valor = parseInt(document.getElementById("valor").value);
   const acao = botaoDeSubmissao.value;
 
-  // Disabilita botão
+  // Desabilita botão
   botaoDeSubmissao.disabled = true;
 
   try {
     if (acao === "inserir") {
-      await arvore.insert(valor, atualizaArvore, atualizaStatus);
+      await arvore.insere(valor, atualizaArvore, atualizaStatus);
     } else if (acao === "remover") {
-      await arvore.delete(valor, atualizaArvore, atualizaStatus);
+      await arvore.deleta(valor, atualizaArvore, atualizaStatus);
     } else if (acao === "buscar") {
-      const caminho = arvore.search(valor);
+      const caminho = arvore.pesquisa(valor);
       const encontrado = caminho[caminho.length - 1] === valor;
       destacaCaminhoBusca(caminho);
       atualizaStatus(
@@ -59,6 +59,7 @@ function destacaCaminhoBusca(caminho) {
     .style("fill", "#fff");
 }
 
+// Atualiza a visualização da árvore
 function atualizaArvore() {
   return new Promise((resolve) => {
     try {
@@ -105,7 +106,7 @@ function contaDescendentesEsquerda(no) {
 
 
 
-// Create the visualization function
+// Cria a função de visualização da arvore
 function criaArvore() {
   if (!arvore.raiz) return;
 
