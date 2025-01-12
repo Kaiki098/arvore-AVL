@@ -50,7 +50,10 @@ export class ArvoreAVL {
 
   async delete(valor, atualizaArvore, atualizaStatus) {
     const deleteNode = async (node, valor) => {
-      if (!node) return null;
+      if (!node) {
+        atualizaStatus("Nó não existe.")
+        return null
+      };
 
       if (valor < node.valor) {
         node.esq = await deleteNode(node.esq, valor);
@@ -94,32 +97,27 @@ export class ArvoreAVL {
     const bf = this._getFatorBalanceamento(node);
 
     if (bf > 1) {
-      await atualizaArvore();
+      await atualizaArvore(); // usa-se await para esperar a arvore ser atualizada 
       let rotacaoMsg = `rotação à direita no nó ${node.valor}.`;
       if (this._getFatorBalanceamento(node.esq) < 0) {
         rotacaoMsg = `rotação à esquerda no nó ${node.esq.valor} e rotação à direita no nó ${node.valor}.`;
         node.esq = this._esqRotaciona(node.esq);
       }
       atualizaStatus(rotacaoMsg.charAt(0).toUpperCase() + rotacaoMsg.slice(1));
-      await new Promise((resolve) => {
-        alert(`Será necessário realizar ${rotacaoMsg}`);
-        resolve();
-      });
+      alert(`Será necessário realizar ${rotacaoMsg}`);
+
       return this._dirRotaciona(node);
     }
 
     if (bf < -1) {
-      await atualizaArvore();
+      await atualizaArvore(); // usa-se await para esperar a arvore ser atualizada
       let rotacaoMsg = `rotação à esquerda no nó ${node.valor}.`;
       if (this._getFatorBalanceamento(node.dir) > 0) {
         rotacaoMsg = `rotação à direita no nó ${node.dir.valor} e rotação à esquerda no nó ${node.valor}.`;
         node.dir = this._dirRotaciona(node.dir);
       }
       atualizaStatus(rotacaoMsg.charAt(0).toUpperCase() + rotacaoMsg.slice(1));
-      await new Promise((resolve) => {
-        alert(`Será necessário realizar ${rotacaoMsg}`);
-        resolve();
-      });
+      alert(`Será necessário realizar ${rotacaoMsg}`);
       return this._esqRotaciona(node);
     }
 
@@ -173,40 +171,26 @@ export class ArvoreAVL {
     if (!node) return;
 
     node.fator = -this._getFatorBalanceamento(node);
-    console.log(node.valor, node.fator);
 
     this.atualizaFatores(node.esq);
     this.atualizaFatores(node.dir);
   }
 
-  percorreNiveis() {
-    const result = [];
-    const queue = [this.raiz];
-    while (queue.length) {
-      const node = queue.shift();
-      if (node) {
-        result.push(node.valor);
-        if (node.esq) queue.push(node.esq);
-        if (node.dir) queue.push(node.dir);
-      }
-    }
-    return result;
-  }
-
   atualizaDados() {
-    console.log("Atualizando dados...");
-    const buildData = (node) => {
-      if (!node) return null;
+    const constroiDados = (no) => {
+      if (!no) return null;
 
       return {
-        value: node.valor,
-        fator: node.fator,
-        children: [buildData(node.esq), buildData(node.dir)].filter(Boolean), // Remove null values
+        valor: no.valor,
+        fator: no.fator,
+        children: [constroiDados(no.esq), constroiDados(no.dir)].filter(
+          Boolean // Converte valores para boolean -> null se torna false
+        ), // Filtra valores que são nulos
       };
     };
 
     if (this.raiz) {
-      this.dados = buildData(this.raiz);
+      this.dados = constroiDados(this.raiz);
     } else {
       this.dados = {};
     }

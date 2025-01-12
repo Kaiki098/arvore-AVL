@@ -5,12 +5,12 @@ export const arvore = new ArvoreAVL();
 
 form.addEventListener("submit", async function (event) {
   event.preventDefault();
-  const submitButton = event.submitter;
+  const botaoDeSubmissao = event.submitter;
   const valor = parseInt(document.getElementById("valor").value);
-  const acao = submitButton.value;
+  const acao = botaoDeSubmissao.value;
 
-  // Disable button
-  submitButton.disabled = true;
+  // Disabilita botão
+  botaoDeSubmissao.disabled = true;
 
   try {
     if (acao === "inserir") {
@@ -19,152 +19,138 @@ form.addEventListener("submit", async function (event) {
       await arvore.delete(valor, atualizaArvore, atualizaStatus);
     } else if (acao === "buscar") {
       const caminho = arvore.search(valor);
-      console.log(caminho);
       const encontrado = caminho[caminho.length - 1] === valor;
-      highlightSearchPath(caminho);
+      destacaCaminhoBusca(caminho);
       atualizaStatus(
         encontrado ? `ENCONTRADO: ${valor}` : `NÃO ENCONTRADO: ${valor}`
       );
     }
   } finally {
-    // Re-enable button after operation completes
-    submitButton.disabled = false;
+    // Habilita botão após completar a operação
+    // (Garante que o usuário não adicione novos valores
+    // antes que a ação anterior esteja finalizada)
+    botaoDeSubmissao.disabled = false;
   }
 });
 
+// Função responsável por atualizar o campos status
 function atualizaStatus(novoStatus) {
   statusDiv.innerText = novoStatus;
 }
 
-function highlightSearchPath(caminho) {
-  const duracao = 1000;
+function destacaCaminhoBusca(caminho) {
+  const duracao = 500;
 
-  // Animate nodes sequentially
+  // Anima nós sequencialmente
   d3.selectAll("circle")
-    .transition()
-    .duration(duracao)
+    .transition() // Começa animação
+    .duration(duracao) // Tempo de duração da animação, branco para verde
     .style("fill", function (d) {
-      const index = caminho.indexOf(d.data.value);
+      // Verifica se o elemento está no caminho,
+      // Se não estiver colore de branco,
+      // Se estiver, colore com um tom de verde
+      const index = caminho.indexOf(d.data.valor);
       if (index === -1) return "#fff";
-      return d3.interpolateGreens((index+1) / caminho.length);
+      return d3.interpolateGreens((index + 1) / caminho.length);
     })
-    .transition()
-    .delay(1000)
-    .duration(duracao)
+    .transition() // Começa outra animação
+    .delay(1000) // Tempo para voltar a cor anterior após animar
+    .duration(duracao) // Tempo de duração da animação, verde para branco
     .style("fill", "#fff");
 }
 
-async function atualizaArvore() {
-  return await new Promise((resolve) => {
+function atualizaArvore() {
+  return new Promise((resolve) => {
     try {
-      // Remove previous tree
+      // Remove arvore anterior
       d3.select("#tree-container").select("svg").remove();
 
-      // Create new tree
-      createTree();
+      // Cria nova árvore
+      criaArvore();
 
-      // Update height
+      // Atualiza altura
       treeHeight.innerText = `Altura: ${arvore.raiz.altura}`;
 
-      // Center scroll
+      // Centraliza scroll
       treeContainer.scrollLeft =
         (treeContainer.scrollWidth - treeContainer.clientWidth) / 2;
       treeContainer.scrollTop = 0;
 
-      // Wait for D3 transitions to complete
+      // Garante que toda a árvore seja atualizada
       d3.select("#tree-container")
         .transition()
-        .duration(500)
-        .on("end", resolve);
+        .on("end", () => {
+          resolve();
+        });
     } catch (error) {
-      console.error("Error updating tree:", error);
-      resolve(); // Resolve even on error to prevent blocking
+      console.log("Erro ao atualizar arvore. erro: " + error.message);
+      resolve();
     }
-  });
+  })
 }
 
-function contaDescendentesDireita(node) {
-  if (!node) return [];
-  return node
+function contaDescendentesDireita(no) {
+  if (!no) return 0;
+  return no
     .descendants()
-    .filter((d) => d.data.value >= node.data.value && d !== node).length;
+    .filter((d) => d.data.valor >= no.data.valor && d !== no).length;
 }
 
-function contaDescendentesEsquerda(node) {
-  if (!node) return [];
-  return node
+function contaDescendentesEsquerda(no) {
+  if (!no) return 0;
+  return no
     .descendants()
-    .filter((d) => d.data.value <= node.data.value && d !== node).length;
+    .filter((d) => d.data.valor <= no.data.valor && d !== no).length;
 }
 
-function updateNodeText(nodes) {
-  // Update value text
-  nodes
-    .selectAll("text.value-text")
-    .data((d) => [d])
-    .join("text")
-    .attr("class", "value-text")
-    .attr("dy", "4")
-    .attr("text-anchor", "middle")
-    .text((d) => d.data.value)
-    .style("font-size", "12px");
 
-  // Update factor text
-  nodes
-    .selectAll("text.factor-text")
-    .data((d) => [d])
-    .join("text")
-    .attr("class", "factor-text")
-    .attr("dy", "-25")
-    .attr("text-anchor", "middle")
-    .text((d) => `FB=${d.data.fator}`)
-    .style("font-size", "12px");
-}
 
 // Create the visualization function
-function createTree() {
+function criaArvore() {
   if (!arvore.raiz) return;
-  const root = d3.hierarchy(arvore.dados);
 
-  console.log(root);
   const width = 2000;
-  const height = 600; // Increased height
-  const verticalSpacing = 80; // Increased vertical spacing
-  const horizontalSpacing = 25;
-
-  // Create SVG container
+  const height = 600;
+  const espacamentoVertical = 80;
+  const espacamentoHorizontal = 25;
+  
+  const raiz = d3.hierarchy(arvore.dados);
+  
+  // Cria container SVG
   const svg = d3
     .select("#tree-container")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
     .append("g")
-    .attr("transform", `translate(${width / 2}, 50)`);
 
-  // Custom node positioning
-  root.x = 0;
-  root.y = 0;
+  // Posiciona a raiz no meio 
+  raiz.x = width / 2;
+  raiz.y = 50;
 
-  root.descendants().forEach((d) => {
+  raiz.descendants().forEach((d) => {
     if (d.parent) {
       // Posição vertical: cada nível desce uma distância fixa
-      d.y = d.parent.y + verticalSpacing;
+      d.y = d.parent.y + espacamentoVertical;
       // Posição horizontal: baseado no valor do nó
-      if (d.data.value < d.parent.data.value) {
+      if (d.data.valor < d.parent.data.valor) {
+        // Nó maior: à esquerda do pai
         d.x =
-          d.parent.x - horizontalSpacing * (1 + contaDescendentesDireita(d));
+          d.parent.x -
+          espacamentoHorizontal * (1 + contaDescendentesDireita(d));
       } else {
         // Nó maior: à direita do pai
         d.x =
-          d.parent.x + horizontalSpacing * (1 + contaDescendentesEsquerda(d));
+          d.parent.x +
+          espacamentoHorizontal * (1 + contaDescendentesEsquerda(d));
       }
     }
   });
 
-  // Add links
+  // Adiciona links
   svg
     .selectAll("path")
-    .data(root.links())
+    .data(raiz.links())
     .join("path")
     .attr(
       "d",
@@ -176,27 +162,33 @@ function createTree() {
     .attr("fill", "none")
     .attr("stroke", "#555");
 
-  // Create node groups
+  // Cria nós
   const nodes = svg
     .selectAll("g")
-    .data(root.descendants())
+    .data(raiz.descendants())
     .join("g")
     .attr("transform", (d) => `translate(${d.x},${d.y})`);
 
-  // Add circles to groups
+  // Adiciona circulos aos nós
   nodes
     .append("circle")
     .attr("r", 20)
     .attr("fill", "#fff")
     .attr("stroke", "#555");
 
-  // Add text to groups
+  // Adiciona texto aos nós
   nodes
     .append("text")
     .attr("dy", "4")
     .attr("text-anchor", "middle")
-    .text((d) => d.data.value)
+    .text((d) => d.data.valor)
     .style("font-size", "12px");
 
-  updateNodeText(nodes);
+  // Adiciona fator de balanciamento aos nós
+  nodes
+    .append("text")
+    .attr("dy", "-25")
+    .attr("text-anchor", "middle")
+    .text((d) => `FB=${d.data.fator}`)
+    .style("font-size", "12px");
 }
