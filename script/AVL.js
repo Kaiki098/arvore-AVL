@@ -177,8 +177,20 @@ export class ArvoreAVL {
         node.esq = this._esqRotaciona(node.esq);
       }
       atualizaStatus(rotacaoMsg.charAt(0).toUpperCase() + rotacaoMsg.slice(1));
-      alert(`Será necessário realizar ${rotacaoMsg}`);
-
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Árvore desbalanceada',
+        text: `Será necessário realizar ${rotacaoMsg}`,
+        backdrop: false,
+        customClass: {
+          icon: 'swal2-warning',
+        }
+      });
+      //Swal.fire('Será necessário realizar ${rotacaoMsg}');
+      //alert(`Será necessário realizar ${rotacaoMsg}`);
+      this.atualizaDados();
+      atualizaArvore(); // Atualiza a árvore após a rotação à esquerdas
+      await sleep(2000); // Pausa de 2 segundos
       return this._dirRotaciona(node);
     }
 
@@ -194,7 +206,17 @@ export class ArvoreAVL {
         node.dir = this._dirRotaciona(node.dir);
       }
       atualizaStatus(rotacaoMsg.charAt(0).toUpperCase() + rotacaoMsg.slice(1));
-      alert(`Será necessário realizar ${rotacaoMsg}`);
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Árvore desbalanceada',
+        backdrop: false,
+        text: `Será necessário realizar ${rotacaoMsg}`,
+      });
+      //Swal.fire(`Será necessário realizar ${rotacaoMsg}`);
+      //alert(`Será necessário realizar ${rotacaoMsg}`);
+      this.atualizaDados();
+      atualizaArvore(); // Atualiza a árvore após a rotação à esquerda
+      await sleep(2000); // Pausa de 2 segundos
       return this._esqRotaciona(node);
     }
 
@@ -283,4 +305,8 @@ export class ArvoreAVL {
       this.dados = {};
     }
   }
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

@@ -1,0 +1,34 @@
+.swal2-popup {
+    background-color: #fff !important; /* Cor de fundo padrão */
+    border: 1px solid #ccc !important; /* Cor da borda */
+    color: #333 !important; /* Cor do texto */
+}
+
+.swal2-popup.swal2-warning {
+    background-color: #ff0000 !important; /* Cor de fundo de aviso */
+    border: 1px solid #000000 !important; /* Cor da borda de aviso */
+    color: #333 !important; /* Cor do texto de aviso */
+}
+
+.swal2-title {
+    color: #333333 !important; /* Cor do título */
+}
+
+.swal2-content {
+    color: #000 !important; /* Cor do conteúdo */
+}
+
+.swal2-confirm {
+    background-color: #01522c !important; /* Cor do botão de confirmação */
+    color: white !important; /* Cor do texto do botão */
+}
+
+.swal2-cancel {
+    background-color: #aaa !important; /* Cor do botão de cancelamento */
+    color: white !important; /* Cor do texto do botão */
+}
+
+.swal2-icon.swal2-warning {
+    color: #65A624 !important;
+    border-color: #65A624 !important;
+}
