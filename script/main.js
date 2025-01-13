@@ -12,20 +12,30 @@ form.addEventListener("submit", async function (event) {
   // Desabilita botão
   botaoDeSubmissao.disabled = true;
 
+  // Para garantir que os botões sejam reabilitados depois de cada operação
   try {
     if (acao === "inserir") {
+      // Insere o valor na árvore
       await arvore.insere(valor, atualizaArvore, atualizaStatus);
     } else if (acao === "remover") {
+      // Remove o valor da árvore
       await arvore.deleta(valor, atualizaArvore, atualizaStatus);
     } else if (acao === "buscar") {
+      // Busca o valor na árvore
       const caminho = arvore.pesquisa(valor);
       const encontrado = caminho[caminho.length - 1] === valor;
       destacaCaminhoBusca(caminho);
 
+      // Atualiza o status com base no resultado da busca
       atualizaStatus(
         encontrado ? `ENCONTRADO: ${valor}` : `NÃO ENCONTRADO: ${valor}`,
       );
 
+      /* 
+      Mostra o valor encontrado, caso ele exista,
+      e exibe um alerta de que não foi possível encontrá-lo,
+      caso não esteja na árvore
+      */
       if (encontrado) {
         atualizaStatus(`ENCONTRADO: ${valor}`);
       } else {
