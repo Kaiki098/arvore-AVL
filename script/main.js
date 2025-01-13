@@ -21,9 +21,26 @@ form.addEventListener("submit", async function (event) {
       const caminho = arvore.pesquisa(valor);
       const encontrado = caminho[caminho.length - 1] === valor;
       destacaCaminhoBusca(caminho);
+
       atualizaStatus(
         encontrado ? `ENCONTRADO: ${valor}` : `NÃO ENCONTRADO: ${valor}`
       );
+
+      if (encontrado) {
+        atualizaStatus(`ENCONTRADO: ${valor}`);
+      } else {
+        atualizaStatus(`NÃO ENCONTRADO: ${valor}`);
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Valor não encontrado',
+          text: `Não foi possível encontrar o valor ${valor}.`,
+          position: 'center-start',
+          backdrop: false,
+          customClass: {
+            icon: 'swal2-warning',
+          }
+        });
+      }
     }
   } finally {
     // Habilita botão após completar a operação
@@ -193,3 +210,4 @@ function criaArvore() {
     .text((d) => `FB=${d.data.fator}`)
     .style("font-size", "12px");
 }
+
