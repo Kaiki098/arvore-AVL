@@ -6,7 +6,7 @@ export const arvore = new ArvoreAVL();
 form.addEventListener("submit", async function (event) {
   event.preventDefault();
   const botaoDeSubmissao = event.submitter;
-  const valor = parseInt(document.getElementById("valor").value);
+  const valor = parseInt(document.getElementById("valor").value || 0);
   const acao = botaoDeSubmissao.value;
 
   // Desabilita botão
@@ -23,7 +23,7 @@ form.addEventListener("submit", async function (event) {
       destacaCaminhoBusca(caminho);
 
       atualizaStatus(
-        encontrado ? `ENCONTRADO: ${valor}` : `NÃO ENCONTRADO: ${valor}`
+        encontrado ? `ENCONTRADO: ${valor}` : `NÃO ENCONTRADO: ${valor}`,
       );
 
       if (encontrado) {
@@ -31,14 +31,14 @@ form.addEventListener("submit", async function (event) {
       } else {
         atualizaStatus(`NÃO ENCONTRADO: ${valor}`);
         await Swal.fire({
-          icon: 'warning',
-          title: 'Valor não encontrado',
+          icon: "warning",
+          title: "Valor não encontrado",
           text: `Não foi possível encontrar o valor ${valor}.`,
-          position: 'center-start',
+          position: "center-start",
           backdrop: false,
           customClass: {
-            icon: 'swal2-warning',
-          }
+            icon: "swal2-warning",
+          },
         });
       }
     }
@@ -104,7 +104,7 @@ function atualizaArvore() {
       console.log("Erro ao atualizar arvore. erro: " + error.message);
       resolve();
     }
-  })
+  });
 }
 
 function contaDescendentesDireita(no) {
@@ -121,8 +121,6 @@ function contaDescendentesEsquerda(no) {
     .filter((d) => d.data.valor <= no.data.valor && d !== no).length;
 }
 
-
-
 // Cria a função de visualização da arvore
 function criaArvore() {
   if (!arvore.raiz) return;
@@ -131,18 +129,18 @@ function criaArvore() {
   const height = 600;
   const espacamentoVertical = 80;
   const espacamentoHorizontal = 25;
-  
+
   const raiz = d3.hierarchy(arvore.dados);
-  
+
   // Cria container SVG
   const svg = d3
     .select("#tree-container")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
-    .append("g")
+    .append("g");
 
-  // Posiciona a raiz no meio 
+  // Posiciona a raiz no meio
   raiz.x = width / 2;
   raiz.y = 50;
 
@@ -175,7 +173,7 @@ function criaArvore() {
       d3
         .linkVertical()
         .x((d) => d.x)
-        .y((d) => d.y)
+        .y((d) => d.y),
     )
     .attr("fill", "none")
     .attr("stroke", "#555");
@@ -210,4 +208,3 @@ function criaArvore() {
     .text((d) => `FB=${d.data.fator}`)
     .style("font-size", "12px");
 }
-
