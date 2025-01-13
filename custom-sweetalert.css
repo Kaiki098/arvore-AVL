@@ -2,6 +2,7 @@
     background-color: #fff !important; /* Cor de fundo padrão */
     border: 1px solid #ccc !important; /* Cor da borda */
     color: #333 !important; /* Cor do texto */
+    text-align: center !important; /* Alinhamento do texto */
 }
 
 .swal2-popup.swal2-warning {

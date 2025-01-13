@@ -44,6 +44,16 @@ export class ArvoreAVL {
         node.dir = await insereNode(node.dir, node);
       } else {
         // Caso o valor novo já exista, ele não é inserido
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Inserção inválida',
+          text: `O valor ${valor} já existe.`,
+          backdrop: false,
+          position: 'center-start',
+          customClass: {
+            icon: 'swal2-warning',
+          }
+        });
         atualizaStatus(`O VALOR ${valor} JÁ EXISTE.`);
         return node;
       }
@@ -92,6 +102,16 @@ export class ArvoreAVL {
     const deletaNode = async (node, valor) => {
       // Caso a busca chegue abaixo de um nó folha, o valor não existe
       if (!node) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Remoção inválida',
+          text: `O valor ${valor} não existe.`,
+          backdrop: false,
+          position: 'center-start',
+          customClass: {
+            icon: 'swal2-warning',
+          }
+        });
         atualizaStatus("Nó não existe.")
         return null
       };
@@ -181,6 +201,7 @@ export class ArvoreAVL {
         icon: 'warning',
         title: 'Árvore desbalanceada',
         text: `Será necessário realizar ${rotacaoMsg}`,
+        position: 'center-start',
         backdrop: false,
         customClass: {
           icon: 'swal2-warning',
@@ -189,7 +210,7 @@ export class ArvoreAVL {
       //Swal.fire('Será necessário realizar ${rotacaoMsg}');
       //alert(`Será necessário realizar ${rotacaoMsg}`);
       this.atualizaDados();
-      atualizaArvore(); // Atualiza a árvore após a rotação à esquerdas
+      atualizaArvore(); // Atualiza a árvore após a rotação à esquerda
       await sleep(2000); // Pausa de 2 segundos
       return this._dirRotaciona(node);
     }
@@ -209,6 +230,7 @@ export class ArvoreAVL {
       await Swal.fire({
         icon: 'warning',
         title: 'Árvore desbalanceada',
+        position: 'center-start',
         backdrop: false,
         text: `Será necessário realizar ${rotacaoMsg}`,
       });
